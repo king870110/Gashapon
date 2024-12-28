@@ -1,0 +1,51 @@
+.store-detail-page {
+	min-height: 100vh;
+	background-color: #f8f9fa;
+	padding-bottom: 2rem;
+}
+
+.card {
+	border: none;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	margin-bottom: 1rem;
+}
+
+.card-img-top {
+	height: 200px;
+	object-fit: cover;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.comments-list {
+	max-height: 500px;
+	overflow-y: auto;
+}
+
+.comment-item {
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #eee;
+}
+
+.comment-item:last-child {
+	border-bottom: none;
+}
+
+.text-warning {
+	letter-spacing: 2px;
+}
+
+.form-select:focus {
+	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+	border-color: #80bdff;
+}
+
+textarea.form-control {
+	resize: none;
+}
+
+.btn-primary {
+	padding: 0.6rem;
+	font-weight: 500;
+}

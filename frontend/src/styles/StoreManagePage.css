@@ -1,0 +1,40 @@
+.store-manage-page {
+	min-height: 100vh;
+	background-color: #f8f9fa;
+	padding-bottom: 2rem;
+}
+
+.card {
+	border: none;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-title {
+	color: #333;
+	font-weight: 600;
+}
+
+.table {
+	margin-bottom: 0;
+}
+
+.table th {
+	border-top: none;
+	font-weight: 600;
+	color: #444;
+}
+
+.table td {
+	vertical-align: middle;
+}
+
+.btn-danger {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+}
+
+.form-control:focus {
+	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+	border-color: #80bdff;
+}

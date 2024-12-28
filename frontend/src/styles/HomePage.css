@@ -1,0 +1,51 @@
+.home-page {
+	min-height: 100vh;
+	background-color: #f8f9fa;
+}
+
+.map-container {
+	height: 85vh;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: #eee;
+}
+
+.stores-list {
+	height: 75vh;
+	overflow-y: auto;
+	padding-right: 10px;
+}
+
+.store-card {
+	transition: transform 0.2s;
+}
+
+.store-card:hover {
+	transform: translateY(-2px);
+}
+
+.search-container {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	background-color: #f8f9fa;
+	padding: 10px 0;
+}
+
+.card {
+	border: none;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+	padding: 1.25rem;
+}
+
+.btn-primary {
+	background-color: #007bff;
+	border: none;
+}
+
+.btn-primary:hover {
+	background-color: #0056b3;
+}

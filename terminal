@@ -1,0 +1,29 @@
+mkdir gashapon-map
+cd gashapon-map
+npm init -y
+mkdir backend
+cd backend
+npm init -y 
+sudo npm install @nestjs/common @nestjs/core @nestjs/platform-express @nestjs/config @nestjs/jwt @nestjs/swagger @prisma/client reflect-metadata typescript winston morgan redis socket.io newrelic 
+sudo npm install -D @types/node @types/express @types/morgan @types/socket.io prisma typescript ts-node @nestjs/cli 
+sudo npx prisma init 
+mkdir -p src/{auth,stores,products,users,comments,prisma,redis,socket,config} 
+sudo npm install bcrypt class-validator class-transformer
+sudo npm install -D @types/bcrypt 
+sudo npm install @nestjs/passport passport passport-jwt
+sudo npm install -D @types/passport-jwt 
+sudo npm install @nestjs/websockets @nestjs/platform-socket.io
+mkdir frontend
+cd frontend
+npm init -y
+npm install marko @marko/serve @marko/build
+npm install bootstrap socket.io-client axios
+npm install -D @types/socket.io-client typescript
+mkdir -p src/{components,layouts,pages,server,styles,types}
+mkdir -p frontend/public/{images,scripts}
+cd frontend
+rm -rf node_modules package-lock.json
+npm install @marko/express express marko ts-node typescript
+npm install -D @types/express @types/node ts-node-dev
+npm install bootstrap socket.io-client axios
+npm run dev
