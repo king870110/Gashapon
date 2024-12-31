@@ -17,5 +17,7 @@
 		"strictBindCallApply": false,
 		"forceConsistentCasingInFileNames": false,
 		"noFallthroughCasesInSwitch": false
+		// "strict": true, // 啟用所有嚴格模式檢查
+		// "esModuleInterop": true
 	}
 }

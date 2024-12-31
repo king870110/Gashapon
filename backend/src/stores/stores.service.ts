@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import { Injectable, ForbiddenException } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
-import { RedisService } from "../redis/redis.service"
+import { RolesService } from "../roles/roles.service"
 import { CreateStoreDto } from "./dto/create-store.dto"
 import { UpdateStoreDto } from "./dto/update-store.dto"
 
@@ -8,35 +8,43 @@ import { UpdateStoreDto } from "./dto/update-store.dto"
 export class StoresService {
 	constructor(
 		private prisma: PrismaService,
-		private redisService: RedisService
+		private rolesService: RolesService
 	) {}
 
-	private readonly CACHE_TTL = 3600 // 1小時
-	private readonly STORE_KEY = "store:"
-	private readonly STORES_LIST_KEY = "stores:list"
+	async create(data: CreateStoreDto, currentUserId: number) {
+		const hasPermission = await this.rolesService.checkPermission(
+			currentUserId,
+			100
+		)
+		if (!hasPermission) {
+			throw new ForbiddenException("Only merchants can create stores")
+		}
 
-	async create(dto: CreateStoreDto) {
-		const store = await this.prisma.store.create({
-			data: dto,
+		return this.prisma.store.create({
+			data: {
+				...data,
+				userId: currentUserId,
+			},
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+					},
+				},
+			},
 		})
-
-		// 清除商店列表快取
-		await this.redisService.del(this.STORES_LIST_KEY)
-
-		return store
 	}
 
 	async findAll() {
-		// 嘗試從快取獲取
-		const cached = await this.redisService.get<any[]>(this.STORES_LIST_KEY)
-		if (cached) {
-			return cached
-		}
-
-		// 從數據庫獲取
-		const stores = await this.prisma.store.findMany({
+		return this.prisma.store.findMany({
 			include: {
-				products: true,
+				products: {
+					include: {
+						image: true,
+					},
+				},
 				comments: {
 					include: {
 						user: {
@@ -47,30 +55,26 @@ export class StoresService {
 						},
 					},
 				},
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+					},
+				},
 			},
 		})
-
-		// 存入快取
-		await this.redisService.setWithExpiry(
-			this.STORES_LIST_KEY,
-			stores,
-			this.CACHE_TTL
-		)
-
-		return stores
 	}
 
 	async findOne(id: number) {
-		// 嘗試從快取獲取
-		const cached = await this.redisService.get<any>(`${this.STORE_KEY}${id}`)
-		if (cached) {
-			return cached
-		}
-
-		const store = await this.prisma.store.findUnique({
+		return this.prisma.store.findUnique({
 			where: { id },
 			include: {
-				products: true,
+				products: {
+					include: {
+						image: true,
+					},
+				},
 				comments: {
 					include: {
 						user: {
@@ -81,70 +85,50 @@ export class StoresService {
 						},
 					},
 				},
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+					},
+				},
+			},
+		})
+	}
+
+	async update(id: number, data: UpdateStoreDto, currentUserId: number) {
+		const store = await this.prisma.store.findUnique({
+			where: { id },
+			include: {
+				user: {
+					include: { role: true },
+				},
 			},
 		})
 
-		if (!store) {
-			throw new NotFoundException("Store not found")
+		const isAdmin = await this.rolesService.checkPermission(currentUserId, 999)
+		if (!isAdmin && store.userId !== currentUserId) {
+			throw new ForbiddenException("You can only update your own stores")
 		}
 
-		// 存入快取
-		await this.redisService.setWithExpiry(
-			`${this.STORE_KEY}${id}`,
-			store,
-			this.CACHE_TTL
-		)
-
-		return store
+		return this.prisma.store.update({
+			where: { id },
+			data,
+		})
 	}
 
-	async update(id: number, dto: UpdateStoreDto) {
-		const store = await this.prisma.store.update({
+	async remove(id: number, currentUserId: number) {
+		const store = await this.prisma.store.findUnique({
 			where: { id },
-			data: dto,
+			include: { user: true },
 		})
 
-		// 清除相關快取
-		await this.redisService.del(`${this.STORE_KEY}${id}`)
-		await this.redisService.del(this.STORES_LIST_KEY)
-
-		return store
-	}
-
-	async remove(id: number) {
-		await this.prisma.store.delete({
-			where: { id },
-		})
-
-		// 清除相關快取
-		await this.redisService.del(`${this.STORE_KEY}${id}`)
-		await this.redisService.del(this.STORES_LIST_KEY)
-	}
-
-	async findNearby(lat: number, lng: number, radius: number = 5) {
-		const cacheKey = `stores:nearby:${lat}:${lng}:${radius}`
-
-		// 嘗試從快取獲取
-		const cached = await this.redisService.get<any[]>(cacheKey)
-		if (cached) {
-			return cached
+		if (store.userId !== currentUserId && store.user.role !== Role.ADMIN) {
+			throw new ForbiddenException("You can only delete your own stores")
 		}
 
-		const stores = await this.prisma.$queryRaw`
-      SELECT *, 
-      ( 6371 * acos( cos( radians(${lat}) ) 
-        * cos( radians(latitude) ) 
-        * cos( radians(longitude) - radians(${lng}) ) 
-        + sin( radians(${lat}) ) 
-        * sin( radians(latitude) ) ) ) AS distance 
-      FROM "Store" 
-      HAVING distance < ${radius} 
-      ORDER BY distance;
-    `
-
-		// 存入快取，但時間較短（15分鐘）
-		await this.redisService.setWithExpiry(cacheKey, stores, 900)
-
-		return stores
+		return this.prisma.store.delete({
+			where: { id },
+		})
 	}
 }

@@ -1,48 +1,114 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
+import { CreateUserDto } from "./dto/create-user.dto"
 import { UpdateUserDto } from "./dto/update-user.dto"
+import { Role } from "../types"
 
 @Injectable()
 export class UsersService {
 	constructor(private prisma: PrismaService) {}
 
-	async findOne(id: number) {
-		const user = await this.prisma.user.findUnique({
-			where: { id },
+	async create(data: CreateUserDto) {
+		return this.prisma.user.create({
+			data,
 			select: {
 				id: true,
 				email: true,
 				name: true,
+				full_name: true,
 				role: true,
+				is_active: true,
+				is_verified: true,
 				createdAt: true,
-				comments: true,
 			},
 		})
-
-		if (!user) {
-			throw new NotFoundException("User not found")
-		}
-
-		return user
 	}
 
-	async update(id: number, dto: UpdateUserDto) {
-		const user = await this.prisma.user.update({
-			where: { id },
-			data: dto,
+	async findAll() {
+		return this.prisma.user.findMany({
 			select: {
 				id: true,
 				email: true,
 				name: true,
+				full_name: true,
 				role: true,
+				is_active: true,
+				is_verified: true,
+				createdAt: true,
 			},
 		})
+	}
 
-		return user
+	async findOne(id: number) {
+		return this.prisma.user.findUnique({
+			where: { id },
+			select: {
+				id: true,
+				email: true,
+				name: true,
+				full_name: true,
+				role: true,
+				is_active: true,
+				is_verified: true,
+				createdAt: true,
+				comments: true,
+				stores: {
+					select: {
+						id: true,
+						name: true,
+						address: true,
+					},
+				},
+				images: {
+					select: {
+						id: true,
+						url: true,
+						isPublic: true,
+					},
+				},
+			},
+		})
+	}
+
+	async findByEmail(email: string) {
+		return this.prisma.user.findUnique({
+			where: { email },
+		})
+	}
+
+	async findMerchants() {
+		return this.prisma.user.findMany({
+			where: {
+				role: Role.MERCHANT,
+			},
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				stores: true,
+			},
+		})
+	}
+
+	async update(id: number, data: UpdateUserDto) {
+		return this.prisma.user.update({
+			where: { id },
+			data,
+			select: {
+				id: true,
+				email: true,
+				name: true,
+				full_name: true,
+				role: true,
+				is_active: true,
+				is_verified: true,
+				updatedAt: true,
+			},
+		})
 	}
 
 	async remove(id: number) {
-		await this.prisma.user.delete({
+		return this.prisma.user.delete({
 			where: { id },
 		})
 	}

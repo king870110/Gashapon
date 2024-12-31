@@ -6,79 +6,52 @@ import {
 	Delete,
 	Body,
 	Param,
-	Query,
-	UseGuards,
 	ParseIntPipe,
-	ParseFloatPipe,
+	UseGuards,
+	Request,
 } from "@nestjs/common"
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiBearerAuth,
-} from "@nestjs/swagger"
 import { StoresService } from "./stores.service"
 import { CreateStoreDto } from "./dto/create-store.dto"
 import { UpdateStoreDto } from "./dto/update-store.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
+import { RolesGuard } from "../auth/guards/roles.guard"
+import { Roles } from "../auth/decorators/roles.decorator"
+import { Role } from "@prisma/client"
 
-@ApiTags("商店")
 @Controller("stores")
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class StoresController {
 	constructor(private readonly storesService: StoresService) {}
 
 	@Post()
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
-	@ApiOperation({ summary: "創建商店" })
-	@ApiResponse({ status: 201, description: "成功創建商店" })
-	create(@Body() createStoreDto: CreateStoreDto) {
-		return this.storesService.create(createStoreDto)
+	@Roles(100)
+	create(@Request() req, @Body() createStoreDto: CreateStoreDto) {
+		return this.storesService.create(createStoreDto, req.user.id)
 	}
 
 	@Get()
-	@ApiOperation({ summary: "獲取所有商店" })
-	@ApiResponse({ status: 200, description: "成功獲取所有商店" })
 	findAll() {
 		return this.storesService.findAll()
 	}
 
-	@Get("nearby")
-	@ApiOperation({ summary: "獲取附近商店" })
-	@ApiResponse({ status: 200, description: "成功獲取附近商店" })
-	findNearby(
-		@Query("lat", ParseFloatPipe) lat: number,
-		@Query("lng", ParseFloatPipe) lng: number,
-		@Query("radius", ParseFloatPipe) radius: number
-	) {
-		return this.storesService.findNearby(lat, lng, radius)
-	}
-
 	@Get(":id")
-	@ApiOperation({ summary: "獲取商店詳情" })
-	@ApiResponse({ status: 200, description: "成功獲取商店詳情" })
 	findOne(@Param("id", ParseIntPipe) id: number) {
 		return this.storesService.findOne(id)
 	}
 
 	@Put(":id")
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
-	@ApiOperation({ summary: "更新商店資訊" })
-	@ApiResponse({ status: 200, description: "成功更新商店資訊" })
+	@Roles(100)
 	update(
+		@Request() req,
 		@Param("id", ParseIntPipe) id: number,
 		@Body() updateStoreDto: UpdateStoreDto
 	) {
-		return this.storesService.update(id, updateStoreDto)
+		return this.storesService.update(id, updateStoreDto, req.user.id)
 	}
 
 	@Delete(":id")
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
-	@ApiOperation({ summary: "刪除商店" })
-	@ApiResponse({ status: 200, description: "成功刪除商店" })
-	remove(@Param("id", ParseIntPipe) id: number) {
-		return this.storesService.remove(id)
+	@Roles(Role.ADMIN, Role.MERCHANT)
+	remove(@Request() req, @Param("id", ParseIntPipe) id: number) {
+		return this.storesService.remove(id, req.user.id)
 	}
 }
