@@ -1,117 +1,80 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 import axios from "axios"
-import Navbar from "../components/Navbar"
-import "../styles/ProductsPage.css"
+import { Link } from "react-router-dom"
 
 function ProductsPage() {
 	const [products, setProducts] = useState([])
-	const [stores, setStores] = useState([])
-	const [filters, setFilters] = useState({
-		store: "",
-		search: "",
-	})
-	const navigate = useNavigate()
+	const [loading, setLoading] = useState(true)
+	const [searchTerm, setSearchTerm] = useState("")
 
 	useEffect(() => {
-		fetchProducts()
-		fetchStores()
-	}, [])
-
-	const fetchProducts = async () => {
-		try {
-			const response = await axios.get("http://localhost:3000/products")
-			setProducts(response.data)
-		} catch (error) {
-			console.error("Error fetching products:", error)
+		const fetchProducts = async () => {
+			try {
+				const response = await axios.get(
+					`/api/frontend/products/search?keyword=${searchTerm}`
+				)
+				setProducts(response.data)
+				setLoading(false)
+			} catch (error) {
+				console.error("Error fetching products:", error)
+				setLoading(false)
+			}
 		}
-	}
 
-	const fetchStores = async () => {
-		try {
-			const response = await axios.get("http://localhost:3000/stores")
-			setStores(response.data)
-		} catch (error) {
-			console.error("Error fetching stores:", error)
-		}
-	}
+		const debounce = setTimeout(() => {
+			fetchProducts()
+		}, 300)
 
-	const handleFilterChange = (e) => {
-		setFilters({
-			...filters,
-			[e.target.name]: e.target.value,
-		})
-	}
-
-	const filteredProducts = products.filter((product) => {
-		return (
-			(filters.store === "" || product.store.id.toString() === filters.store) &&
-			(filters.search === "" ||
-				product.name.toLowerCase().includes(filters.search.toLowerCase()))
-		)
-	})
+		return () => clearTimeout(debounce)
+	}, [searchTerm])
 
 	return (
-		<div className="products-page">
-			<Navbar />
-			<div className="container mt-4">
-				<div className="filters mb-4">
-					<div className="row">
-						<div className="col-md-4">
-							<select
-								className="form-select"
-								name="store"
-								value={filters.store}
-								onChange={handleFilterChange}
-							>
-								<option value="">所有商店</option>
-								{stores.map((store) => (
-									<option key={store.id} value={store.id}>
-										{store.name}
-									</option>
-								))}
-							</select>
-						</div>
-						<div className="col-md-8">
-							<input
-								type="text"
-								className="form-control"
-								placeholder="搜尋商品..."
-								name="search"
-								value={filters.search}
-								onChange={handleFilterChange}
-							/>
-						</div>
-					</div>
-				</div>
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			{/* 搜尋欄 */}
+			<div className="mb-8">
+				<input
+					type="text"
+					placeholder="搜尋商品..."
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+				/>
+			</div>
 
-				<div className="row">
-					{filteredProducts.map((product) => (
-						<div key={product.id} className="col-md-3 mb-4">
-							<div className="card product-card">
-								<img
-									src={product.imageUrl}
-									className="card-img-top"
-									alt={product.name}
-								/>
-								<div className="card-body">
-									<h5 className="card-title">{product.name}</h5>
-									<p className="card-text">NT$ {product.price}</p>
-									<p className="card-text text-muted">
-										商店：{product.store.name}
+			{loading ? (
+				<div>Loading...</div>
+			) : (
+				<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6">
+					{products.map((product) => (
+						<Link
+							key={product.id}
+							to={`/stores/${product.storeId}`}
+							className="group"
+						>
+							<div className="relative bg-white rounded-lg shadow overflow-hidden">
+								<div className="aspect-w-1 aspect-h-1">
+									<img
+										src={product.imageUrl}
+										alt={product.name}
+										className="w-full h-full object-center object-cover group-hover:opacity-75"
+									/>
+								</div>
+								<div className="p-4">
+									<h3 className="text-sm font-medium text-gray-900">
+										{product.name}
+									</h3>
+									<p className="mt-1 text-sm text-gray-500">
+										{product.storeName}
 									</p>
-									<button
-										className="btn btn-primary w-100"
-										onClick={() => navigate(`/store/${product.store.id}`)}
-									>
-										查看商店
-									</button>
+									<p className="mt-1 text-lg font-medium text-gray-900">
+										${product.price}
+									</p>
 								</div>
 							</div>
-						</div>
+						</Link>
 					))}
 				</div>
-			</div>
+			)}
 		</div>
 	)
 }

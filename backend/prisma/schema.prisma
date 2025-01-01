@@ -91,4 +91,30 @@ model Comment {
   @@map("comments")
 }
 
+model Banner {
+	id        Int      @id @default(autoincrement())
+	createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+	updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+	imageUrl  String   @map("image_url") @db.VarChar
+	link      String   @db.VarChar
+	title     String?  @db.VarChar
+	isActive  Boolean  @default(true) @map("is_active")
+	order     Int      @default(0)
+
+	@@map("banners")
+}
+
+model Faq {
+	id        Int      @id @default(autoincrement())
+	createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+	updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+	question  String   @db.VarChar
+	answer    String   @db.Text
+	category  String   @db.VarChar
+	order     Int      @default(0)
+	isActive  Boolean  @default(true) @map("is_active")
+
+	@@map("faqs")
+}
+
 

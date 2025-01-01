@@ -11,8 +11,8 @@ async function bootstrap() {
 
 	// Swagger 配置
 	const config = new DocumentBuilder()
-		.setTitle("API 文檔")
-		.setDescription("API 接口文檔")
+		.setTitle("Gashapon Map API")
+		.setDescription("API documentation for Gashapon Map")
 		.setVersion("1.0")
 		.addBearerAuth()
 		.build()

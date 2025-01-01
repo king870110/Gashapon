@@ -1,48 +1,46 @@
-import { Injectable, OnModuleDestroy } from "@nestjs/common"
-import { createClient, RedisClientType } from "redis"
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
+import Redis from "ioredis"
 
 @Injectable()
-export class RedisService implements OnModuleDestroy {
-	private client: RedisClientType
-	private readonly DEFAULT_EXPIRATION = 3600 // 1小時
+export class RedisService implements OnModuleInit, OnModuleDestroy {
+	private client: Redis
 
-	constructor(private configService: ConfigService) {
-		this.client = createClient({
-			url: this.configService.get("redis.url"),
+	constructor(private configService: ConfigService) {}
+
+	async onModuleInit() {
+		this.client = new Redis({
+			host: this.configService.get("REDIS_HOST", "localhost"),
+			port: this.configService.get("REDIS_PORT", 6379),
+			password: this.configService.get("REDIS_PASSWORD"),
+			db: this.configService.get("REDIS_DB", 0),
 		})
-		this.client.connect()
 	}
 
 	async onModuleDestroy() {
 		await this.client.quit()
 	}
 
-	async set(key: string, value: any) {
-		await this.client.set(key, JSON.stringify(value))
+	async get(key: string): Promise<string | null> {
+		return this.client.get(key)
 	}
 
-	async get<T>(key: string): Promise<T | null> {
-		const data = await this.client.get(key)
-		return data ? JSON.parse(data) : null
-	}
-
-	async del(key: string) {
-		await this.client.del(key)
-	}
-
-	async setWithExpiry(
-		key: string,
-		value: any,
-		seconds: number = this.DEFAULT_EXPIRATION
-	) {
-		await this.client.setEx(key, seconds, JSON.stringify(value))
-	}
-
-	async delByPattern(pattern: string) {
-		const keys = await this.client.keys(pattern)
-		if (keys.length > 0) {
-			await this.client.del(keys)
+	async set(key: string, value: string, ttl?: number): Promise<"OK" | null> {
+		if (ttl) {
+			return this.client.set(key, value, "EX", ttl)
 		}
+		return this.client.set(key, value)
+	}
+
+	async del(key: string): Promise<number> {
+		return this.client.del(key)
+	}
+
+	async keys(pattern: string): Promise<string[]> {
+		return this.client.keys(pattern)
+	}
+
+	getClient(): Redis {
+		return this.client
 	}
 }

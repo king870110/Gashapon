@@ -2,11 +2,13 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 
-function LoginPage() {
+function RegisterPage() {
 	const navigate = useNavigate()
 	const [formData, setFormData] = useState({
 		email: "",
 		password: "",
+		name: "",
+		full_name: "",
 	})
 	const [error, setError] = useState("")
 	const [loading, setLoading] = useState(false)
@@ -24,18 +26,10 @@ function LoginPage() {
 		setLoading(true)
 
 		try {
-			const response = await axios.post("/api/auth/login", formData)
-			localStorage.setItem("token", response.data.token)
-			localStorage.setItem("user", JSON.stringify(response.data.user))
-
-			// 根據用戶角色導向不同頁面
-			if (response.data.user.role === "ADMIN") {
-				navigate("/admin")
-			} else {
-				navigate("/")
-			}
+			await axios.post("/api/auth/register", formData)
+			navigate("/login", { state: { message: "註冊成功，請登入" } })
 		} catch (error) {
-			setError(error.response?.data?.message || "登入失敗，請檢查您的帳號密碼")
+			setError(error.response?.data?.message || "註冊失敗，請稍後再試")
 		} finally {
 			setLoading(false)
 		}
@@ -45,15 +39,15 @@ function LoginPage() {
 		<div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
 			<div className="sm:mx-auto sm:w-full sm:max-w-md">
 				<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-					登入您的帳號
+					註冊新帳號
 				</h2>
 				<p className="mt-2 text-center text-sm text-gray-600">
-					或{" "}
+					已經有帳號？{" "}
 					<Link
-						to="/register"
+						to="/login"
 						className="font-medium text-indigo-600 hover:text-indigo-500"
 					>
-						註冊新帳號
+						登入
 					</Link>
 				</p>
 			</div>
@@ -89,6 +83,45 @@ function LoginPage() {
 
 						<div>
 							<label
+								htmlFor="name"
+								className="block text-sm font-medium text-gray-700"
+							>
+								使用者名稱
+							</label>
+							<div className="mt-1">
+								<input
+									id="name"
+									name="name"
+									type="text"
+									required
+									value={formData.name}
+									onChange={handleChange}
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label
+								htmlFor="full_name"
+								className="block text-sm font-medium text-gray-700"
+							>
+								全名
+							</label>
+							<div className="mt-1">
+								<input
+									id="full_name"
+									name="full_name"
+									type="text"
+									value={formData.full_name}
+									onChange={handleChange}
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label
 								htmlFor="password"
 								className="block text-sm font-medium text-gray-700"
 							>
@@ -107,32 +140,6 @@ function LoginPage() {
 							</div>
 						</div>
 
-						<div className="flex items-center justify-between">
-							<div className="flex items-center">
-								<input
-									id="remember_me"
-									name="remember_me"
-									type="checkbox"
-									className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-								/>
-								<label
-									htmlFor="remember_me"
-									className="ml-2 block text-sm text-gray-900"
-								>
-									記住我
-								</label>
-							</div>
-
-							<div className="text-sm">
-								<Link
-									to="/forgot-password"
-									className="font-medium text-indigo-600 hover:text-indigo-500"
-								>
-									忘記密碼？
-								</Link>
-							</div>
-						</div>
-
 						<div>
 							<button
 								type="submit"
@@ -141,7 +148,7 @@ function LoginPage() {
 									loading && "opacity-50 cursor-not-allowed"
 								}`}
 							>
-								{loading ? "登入中..." : "登入"}
+								{loading ? "註冊中..." : "註冊"}
 							</button>
 						</div>
 					</form>
@@ -151,4 +158,4 @@ function LoginPage() {
 	)
 }
 
-export default LoginPage
+export default RegisterPage

@@ -9,13 +9,12 @@ export class ProductsService {
 
 	async create(data: CreateProductDto) {
 		return this.prisma.product.create({
-		  data,
-		  include: {
-			store: true, // 可以選擇是否要包括商店資料
-		  },
-		});
-	  }
-	  
+			data,
+			include: {
+				store: true, // 可以選擇是否要包括商店資料
+			},
+		})
+	}
 
 	async findAll() {
 		return this.prisma.product.findMany({
@@ -44,6 +43,21 @@ export class ProductsService {
 	async remove(id: number) {
 		return this.prisma.product.delete({
 			where: { id },
+		})
+	}
+
+	async search(keyword: string) {
+		return this.prisma.product.findMany({
+			where: {
+				OR: [
+					{ name: { contains: keyword } },
+					{ description: { contains: keyword } },
+				],
+			},
+			include: {
+				store: true,
+				image: true,
+			},
 		})
 	}
 }

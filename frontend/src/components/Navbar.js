@@ -1,65 +1,45 @@
-import React from "react"
-import { Link, useNavigate } from "react-router-dom"
-import "../styles/Navbar.css"
+import { Link } from "react-router-dom"
 
 function Navbar() {
-	const navigate = useNavigate()
-	const user = JSON.parse(localStorage.getItem("user"))
-
-	const handleLogout = () => {
-		localStorage.removeItem("user")
-		localStorage.removeItem("token")
-		navigate("/login")
-	}
-
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-white">
-			<div className="container">
-				<Link className="navbar-brand" to="/">
-					扭蛋地圖
-				</Link>
-				<button
-					className="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarNav"
-				>
-					<span className="navbar-toggler-icon"></span>
-				</button>
-				<div className="collapse navbar-collapse" id="navbarNav">
-					<ul className="navbar-nav me-auto">
-						<li className="nav-item">
-							<Link className="nav-link" to="/">
-								地圖
+		<nav className="bg-white shadow">
+			<div className="max-w-7xl mx-auto px-4">
+				<div className="flex justify-between h-16">
+					<div className="flex">
+						<Link to="/" className="flex items-center">
+							<span className="text-xl font-bold text-gray-800">扭蛋地圖</span>
+						</Link>
+						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+							<Link
+								to="/"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+							>
+								首頁
 							</Link>
-						</li>
-						<li className="nav-item">
-							<Link className="nav-link" to="/products">
-								商品
+							<Link
+								to="/stores"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+							>
+								商店地圖
 							</Link>
-						</li>
-					</ul>
-					<div className="d-flex">
-						{user ? (
-							<>
-								<span className="navbar-text me-3">歡迎, {user.name}</span>
-								<button
-									className="btn btn-outline-danger"
-									onClick={handleLogout}
-								>
-									登出
-								</button>
-							</>
-						) : (
-							<>
-								<Link to="/login" className="btn btn-outline-primary me-2">
-									登入
-								</Link>
-								<Link to="/register" className="btn btn-primary">
-									註冊
-								</Link>
-							</>
-						)}
+							<Link
+								to="/products"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+							>
+								商品搜尋
+							</Link>
+							<Link
+								to="/faq"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+							>
+								常見問題
+							</Link>
+						</div>
+					</div>
+					<div className="flex items-center">
+						<button className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+							登入
+						</button>
 					</div>
 				</div>
 			</div>

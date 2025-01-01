@@ -1,0 +1,65 @@
+1. 用戶相關 API
+註冊
+POST /auth/register
+功能：用戶註冊
+登入
+POST /auth/login
+功能：用戶登入，返回 JWT token
+獲取用戶信息
+GET /users/me
+功能：獲取當前登入用戶的信息
+2. 商店相關 API
+獲取所有商店
+GET /stores
+功能：獲取所有商店列表
+獲取單個商店詳情
+GET /stores/:id
+功能：獲取指定商店的詳細信息
+創建商店
+POST /stores
+功能：創建新商店（需要管理員權限）
+更新商店
+PUT /stores/:id
+功能：更新指定商店的信息（需要管理員權限）
+刪除商店
+DELETE /stores/:id
+功能：刪除指定商店（需要管理員權限）
+3. 產品相關 API
+獲取所有產品
+GET /products
+功能：獲取所有產品列表
+獲取單個產品詳情
+GET /products/:id
+功能：獲取指定產品的詳細信息
+創建產品
+POST /products
+功能：創建新產品（需要管理員權限）
+更新產品
+PUT /products/:id
+功能：更新指定產品的信息（需要管理員權限）
+刪除產品
+DELETE /products/:id
+功能：刪除指定產品（需要管理員權限）
+4. 圖片相關 API
+上傳圖片
+POST /images
+功能：上傳新圖片
+獲取所有圖片
+GET /images
+功能：獲取所有圖片列表
+刪除圖片
+DELETE /images/:id
+功能：刪除指定圖片
+5. FAQ 相關 API
+獲取所有 FAQ
+GET /faqs
+功能：獲取所有 FAQ 列表
+6. 健康檢查 API
+健康檢查
+GET /health
+功能：檢查服務器健康狀態
+7. WebSocket 相關
+連接 WebSocket
+ws://<server>/socket
+功能：實時通信
+這些 API 應該涵蓋了大部分的後端功能。如果有任何特定的 API 需要詳細說明或有其他功能需要添加，請告訴我！

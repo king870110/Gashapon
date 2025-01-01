@@ -1,86 +1,67 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 import axios from "axios"
-import Navbar from "../components/Navbar"
-import "../styles/HomePage.css"
 
 function HomePage() {
-	const [stores, setStores] = useState([])
-	const [searchQuery, setSearchQuery] = useState("")
-	const navigate = useNavigate()
+	const [featured, setFeatured] = useState([])
+	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		// 獲取商店列表
-		fetchStores()
+		const fetchHomeData = async () => {
+			try {
+				const response = await axios.get("/api/frontend/home")
+				setFeatured(response.data.featured)
+				setLoading(false)
+			} catch (error) {
+				console.error("Error fetching home data:", error)
+				setLoading(false)
+			}
+		}
+
+		fetchHomeData()
 	}, [])
 
-	const fetchStores = async () => {
-		try {
-			const response = await axios.get("http://localhost:3000/stores")
-			setStores(response.data)
-		} catch (error) {
-			console.error("Error fetching stores:", error)
-		}
+	if (loading) {
+		return <div>Loading...</div>
 	}
-
-	const handleSearch = (event) => {
-		setSearchQuery(event.target.value)
-	}
-
-	const filteredStores = stores.filter(
-		(store) =>
-			store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			store.address.toLowerCase().includes(searchQuery.toLowerCase())
-	)
 
 	return (
-		<div className="home-page">
-			<Navbar />
-			<div className="container-fluid mt-4">
-				<div className="row">
-					{/* 地圖區域 */}
-					<div className="col-md-8">
-						<div id="map" className="map-container">
-							{/* 這裡將整合 Google Maps */}
-						</div>
-					</div>
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			{/* Banner Section */}
+			<div className="relative py-8">
+				<div className="h-96 bg-gray-200 rounded-lg overflow-hidden">
+					{/* Banner content */}
+				</div>
+			</div>
 
-					{/* 側邊欄 */}
-					<div className="col-md-4">
-						<div className="search-container mb-3">
-							<input
-								type="text"
-								className="form-control"
-								placeholder="搜尋商店或地址..."
-								value={searchQuery}
-								onChange={handleSearch}
-							/>
+			{/* Featured Products */}
+			<div className="py-12">
+				<h2 className="text-2xl font-bold text-gray-900 mb-6">熱門商品</h2>
+				<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6">
+					{featured.map((product) => (
+						<div
+							key={product.id}
+							className="group relative bg-white rounded-lg shadow"
+						>
+							<div className="aspect-w-1 aspect-h-1 rounded-t-lg overflow-hidden">
+								<img
+									src={product.imageUrl}
+									alt={product.name}
+									className="w-full h-full object-center object-cover"
+								/>
+							</div>
+							<div className="p-4">
+								<h3 className="text-sm font-medium text-gray-900">
+									{product.name}
+								</h3>
+								<p className="mt-1 text-sm text-gray-500">
+									{product.storeName}
+								</p>
+								<p className="mt-1 text-lg font-medium text-gray-900">
+									${product.price}
+								</p>
+							</div>
 						</div>
-
-						<div className="stores-list">
-							{filteredStores.map((store) => (
-								<div key={store.id} className="store-card">
-									<div className="card mb-3">
-										<div className="card-body">
-											<h5 className="card-title">{store.name}</h5>
-											<p className="card-text text-muted">{store.address}</p>
-											<div className="d-flex justify-content-between align-items-center">
-												<small className="text-muted">
-													商品數量: {store.products?.length || 0}
-												</small>
-												<button
-													className="btn btn-primary btn-sm"
-													onClick={() => navigate(`/store/${store.id}`)}
-												>
-													查看詳情
-												</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
+					))}
 				</div>
 			</div>
 		</div>
