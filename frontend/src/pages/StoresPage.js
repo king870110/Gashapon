@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { Link } from "react-router-dom"
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api"
+import { Box, Heading, Flex, Text, Spinner } from "@chakra-ui/react"
 
 function StoresPage() {
 	const [stores, setStores] = useState([])
@@ -33,47 +34,43 @@ function StoresPage() {
 		fetchStores()
 	}, [])
 
-	if (loading) return <div>Loading...</div>
+	if (loading) return <Spinner size="xl" />
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+		<Box maxW="7xl" mx="auto" px={4} py={8}>
+			<Flex direction={{ base: "column", lg: "row" }} gap={8}>
 				{/* 商店列表 */}
-				<div className="lg:col-span-1 space-y-4">
-					<h2 className="text-2xl font-bold text-gray-900">商店列表</h2>
-					<div className="overflow-y-auto h-[600px] space-y-4 pr-4">
-						{stores.map((store) => (
-							<div
-								key={store.id}
-								className={`bg-white rounded-lg shadow p-4 cursor-pointer transition-colors ${
-									selectedStore?.id === store.id
-										? "ring-2 ring-indigo-500"
-										: "hover:bg-gray-50"
-								}`}
-								onClick={() => setSelectedStore(store)}
-							>
-								<h3 className="text-lg font-medium text-gray-900">
-									{store.name}
-								</h3>
-								<p className="mt-1 text-sm text-gray-500">{store.address}</p>
-								<div className="mt-4 flex justify-between items-center">
-									<span className="text-sm text-gray-500">
-										商品數量: {store.products?.length || 0}
-									</span>
-									<Link
-										to={`/stores/${store.id}`}
-										className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-									>
-										查看詳情 →
-									</Link>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
+				<Box flex="1" overflowY="auto" maxH="600px">
+					<Heading as="h2" size="lg" mb={4}>
+						商店列表
+					</Heading>
+					{stores.map((store) => (
+						<Box
+							key={store.id}
+							bg="white"
+							rounded="lg"
+							shadow="md"
+							p={4}
+							mb={4}
+							cursor="pointer"
+							onClick={() => setSelectedStore(store)}
+							border={selectedStore?.id === store.id ? "2px" : "none"}
+							borderColor="teal.500"
+						>
+							<Text fontWeight="bold">{store.name}</Text>
+							<Text>{store.address}</Text>
+							<Flex justify="space-between" align="center" mt={4}>
+								<Text>商品數量: {store.products?.length || 0}</Text>
+								<Link to={`/stores/${store.id}`} color="teal.500">
+									查看詳情 →
+								</Link>
+							</Flex>
+						</Box>
+					))}
+				</Box>
 
 				{/* 地圖 */}
-				<div className="lg:col-span-2">
+				<Box flex="2">
 					<LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}>
 						<GoogleMap
 							mapContainerStyle={mapContainerStyle}
@@ -92,9 +89,9 @@ function StoresPage() {
 							))}
 						</GoogleMap>
 					</LoadScript>
-				</div>
-			</div>
-		</div>
+				</Box>
+			</Flex>
+		</Box>
 	)
 }
 

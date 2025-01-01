@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
+import {
+	Box,
+	Heading,
+	SimpleGrid,
+	Image,
+	Text,
+	Spinner,
+} from "@chakra-ui/react"
 
 function HomePage() {
 	const [featured, setFeatured] = useState([])
@@ -21,50 +29,39 @@ function HomePage() {
 	}, [])
 
 	if (loading) {
-		return <div>Loading...</div>
+		return <Spinner size="xl" />
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<Box maxW="7xl" mx="auto" px={4} py={8}>
 			{/* Banner Section */}
-			<div className="relative py-8">
-				<div className="h-96 bg-gray-200 rounded-lg overflow-hidden">
-					{/* Banner content */}
-				</div>
-			</div>
+			<Box h="96" bg="gray.200" rounded="lg" overflow="hidden" mb={8}>
+				{/* Banner content */}
+			</Box>
 
 			{/* Featured Products */}
-			<div className="py-12">
-				<h2 className="text-2xl font-bold text-gray-900 mb-6">熱門商品</h2>
-				<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6">
-					{featured.map((product) => (
-						<div
-							key={product.id}
-							className="group relative bg-white rounded-lg shadow"
-						>
-							<div className="aspect-w-1 aspect-h-1 rounded-t-lg overflow-hidden">
-								<img
-									src={product.imageUrl}
-									alt={product.name}
-									className="w-full h-full object-center object-cover"
-								/>
-							</div>
-							<div className="p-4">
-								<h3 className="text-sm font-medium text-gray-900">
-									{product.name}
-								</h3>
-								<p className="mt-1 text-sm text-gray-500">
-									{product.storeName}
-								</p>
-								<p className="mt-1 text-lg font-medium text-gray-900">
-									${product.price}
-								</p>
-							</div>
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
+			<Heading as="h2" size="lg" mb={6}>
+				熱門商品
+			</Heading>
+			<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
+				{featured.map((product) => (
+					<Box
+						key={product.id}
+						bg="white"
+						rounded="lg"
+						shadow="md"
+						overflow="hidden"
+					>
+						<Image src={product.imageUrl} alt={product.name} />
+						<Box p={4}>
+							<Text fontWeight="bold">{product.name}</Text>
+							<Text>{product.storeName}</Text>
+							<Text fontWeight="bold">${product.price}</Text>
+						</Box>
+					</Box>
+				))}
+			</SimpleGrid>
+		</Box>
 	)
 }
 

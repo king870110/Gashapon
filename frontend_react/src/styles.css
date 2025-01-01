@@ -1,0 +1,41 @@
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+}
+
+.navbar {
+	background-color: #333;
+	color: white;
+	padding: 10px;
+}
+
+.navbar .container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.navbar .nav-links a {
+	color: white;
+	margin: 0 10px;
+	text-decoration: none;
+}
+
+.carousel img {
+	width: 100%;
+	height: auto;
+}
+
+.activities img {
+	width: 200px;
+	height: auto;
+	margin: 10px;
+}
+
+.map {
+	height: 400px;
+	background-color: #eee;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

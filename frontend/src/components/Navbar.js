@@ -1,49 +1,39 @@
-import { Link } from "react-router-dom"
+import { Box, Flex, Link, Button } from "@chakra-ui/react"
+import { Link as RouterLink } from "react-router-dom"
+import { useTheme } from "next-themes"
 
 function Navbar() {
+	const { theme } = useTheme()
+
+	const bgColor = theme === "dark" ? "gray.800" : "white"
+
 	return (
-		<nav className="bg-white shadow">
-			<div className="max-w-7xl mx-auto px-4">
-				<div className="flex justify-between h-16">
-					<div className="flex">
-						<Link to="/" className="flex items-center">
-							<span className="text-xl font-bold text-gray-800">扭蛋地圖</span>
+		<Box bg={bgColor} px={4} shadow="md">
+			<Flex h={16} alignItems="center" justifyContent="space-between">
+				<Flex alignItems="center">
+					<Link as={RouterLink} to="/" fontSize="xl" fontWeight="bold">
+						扭蛋地圖
+					</Link>
+					<Flex ml={10} display={{ base: "none", md: "flex" }}>
+						<Link as={RouterLink} to="/" px={2} py={1}>
+							首頁
 						</Link>
-						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-							<Link
-								to="/"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
-							>
-								首頁
-							</Link>
-							<Link
-								to="/stores"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-							>
-								商店地圖
-							</Link>
-							<Link
-								to="/products"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-							>
-								商品搜尋
-							</Link>
-							<Link
-								to="/faq"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-							>
-								常見問題
-							</Link>
-						</div>
-					</div>
-					<div className="flex items-center">
-						<button className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
-							登入
-						</button>
-					</div>
-				</div>
-			</div>
-		</nav>
+						<Link as={RouterLink} to="/stores" px={2} py={1}>
+							商店地圖
+						</Link>
+						<Link as={RouterLink} to="/products" px={2} py={1}>
+							商品搜尋
+						</Link>
+						<Link as={RouterLink} to="/faq" px={2} py={1}>
+							常見問題
+						</Link>
+					</Flex>
+				</Flex>
+				<Button colorScheme="teal" size="sm">
+					登入
+				</Button>
+			</Flex>
+		</Box>
 	)
 }
 
