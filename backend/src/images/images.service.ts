@@ -1,19 +1,19 @@
 import { Injectable, ForbiddenException } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
-import { RolesService } from "../roles/roles.service"
 import { CreateImageDto } from "./dto/create-image.dto"
+import { Role } from "@prisma/client"
 
 @Injectable()
 export class ImagesService {
-	constructor(
-		private prisma: PrismaService,
-		private rolesService: RolesService
-	) {}
+	constructor(private prisma: PrismaService) {}
 
 	async create(data: CreateImageDto, userId: number) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+		})
+
 		if (data.isPublic) {
-			const isAdmin = await this.rolesService.checkPermission(userId, 999)
-			if (!isAdmin) {
+			if (user.role !== Role.ADMIN) {
 				throw new ForbiddenException("Only admins can create public images")
 			}
 		}

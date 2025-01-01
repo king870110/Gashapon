@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
 import { CreateUserDto } from "./dto/create-user.dto"
 import { UpdateUserDto } from "./dto/update-user.dto"
-import { Role } from "../types"
 
 @Injectable()
 export class UsersService {
@@ -16,7 +15,6 @@ export class UsersService {
 				email: true,
 				name: true,
 				full_name: true,
-				role: true,
 				is_active: true,
 				is_verified: true,
 				createdAt: true,
@@ -31,7 +29,6 @@ export class UsersService {
 				email: true,
 				name: true,
 				full_name: true,
-				role: true,
 				is_active: true,
 				is_verified: true,
 				createdAt: true,
@@ -47,7 +44,6 @@ export class UsersService {
 				email: true,
 				name: true,
 				full_name: true,
-				role: true,
 				is_active: true,
 				is_verified: true,
 				createdAt: true,
@@ -76,20 +72,6 @@ export class UsersService {
 		})
 	}
 
-	async findMerchants() {
-		return this.prisma.user.findMany({
-			where: {
-				role: Role.MERCHANT,
-			},
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				stores: true,
-			},
-		})
-	}
-
 	async update(id: number, data: UpdateUserDto) {
 		return this.prisma.user.update({
 			where: { id },
@@ -99,7 +81,6 @@ export class UsersService {
 				email: true,
 				name: true,
 				full_name: true,
-				role: true,
 				is_active: true,
 				is_verified: true,
 				updatedAt: true,

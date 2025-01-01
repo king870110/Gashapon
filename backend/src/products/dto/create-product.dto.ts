@@ -7,8 +7,8 @@ export class CreateProductDto {
 	@IsNumber()
 	price: number
 
-	@IsString()
-	imageUrl: string
+	@IsNumber()
+	imageId: number // 使用現有圖片的 ID
 
 	@IsString()
 	@IsOptional()

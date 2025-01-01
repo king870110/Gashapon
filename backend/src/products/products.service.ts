@@ -8,8 +8,14 @@ export class ProductsService {
 	constructor(private prisma: PrismaService) {}
 
 	async create(data: CreateProductDto) {
-		return this.prisma.product.create({ data })
-	}
+		return this.prisma.product.create({
+		  data,
+		  include: {
+			store: true, // 可以選擇是否要包括商店資料
+		  },
+		});
+	  }
+	  
 
 	async findAll() {
 		return this.prisma.product.findMany({
