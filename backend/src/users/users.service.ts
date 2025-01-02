@@ -8,6 +8,13 @@ export class UsersService {
 	constructor(private prisma: PrismaService) {}
 
 	async create(data: CreateUserDto) {
+		// const existingUser = await this.prisma.user.findUnique({
+		// 	where: { email: data.email },
+		// })
+		// if (existingUser) {
+		// 	throw new Error("Email already exists")
+		// }
+
 		return this.prisma.user.create({
 			data,
 			select: {

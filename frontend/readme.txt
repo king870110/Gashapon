@@ -1,4 +1,4 @@
-前端畫面需求：reactjs框架.javascript.chakra-ui
+前端畫面需求：reactjs框架.javascript.bootstrap
 畫面分為前台和後台
 前台：
 首頁-輪播圖片和一些活動圖片
