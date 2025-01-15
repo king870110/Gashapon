@@ -1,19 +1,22 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { Container, Form, Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import api from "../../utils/api"
-import { setToken } from "../../utils/auth"
+import { AuthContext } from "../../context/AuthContext"
 
 const Login = () => {
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
+	const [email, setEmail] = useState("admin@gmail.com")
+	const [password, setPassword] = useState("123456")
 	const navigate = useNavigate()
+	const { login } = useContext(AuthContext)
 
 	const handleLogin = async (e) => {
 		e.preventDefault()
 		try {
 			const response = await api.post("/auth/login", { email, password })
-			setToken(response.data.access_token)
+			console.log({ response })
+			const { access_token, role, userId } = response.data
+			login(access_token, role, userId)
 			navigate("/")
 		} catch (error) {
 			console.error("Login failed:", error)
@@ -26,11 +29,12 @@ const Login = () => {
 			const registerResponse = await api.post("/users/register", {
 				email,
 				password,
-				name: "新用戶",
+				name: email.split("@")[0],
 			})
-			console.log(registerResponse)
+			console.log({ registerResponse })
 			const response = await api.post("/auth/login", { email, password })
-			setToken(response.data.access_token)
+			const { access_token, role, userId } = response.data
+			login(access_token, role, userId)
 			alert("註冊成功，已自動登入。")
 			navigate("/")
 		} catch (error) {

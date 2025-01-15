@@ -17,7 +17,7 @@ export class AdminController {
 	@Get("images")
 	async findAllImages() {
 		// 管理員查看所有圖片，傳入 null 表示不過濾用戶
-		return this.imagesService.findAll(null)
+		return this.imagesService.findAll()
 	}
 
 	@Get("banners")

@@ -28,6 +28,7 @@ model User {
   comments    Comment[]
   stores      Store[]   // One user can have many stores
   images      Image[]   // Images uploaded by the user
+  products    Product[] // Products uploaded by the user
 
   @@map("users")
 }
@@ -54,14 +55,38 @@ model Product {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   name        String   @db.VarChar
-  price       Float
+  price       Float?
   description String?
-  storeId     Int      @map("store_id")
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  imageId     Int      @map("image_id")
-  image       Image    @relation(fields: [imageId], references: [id])
+  userId      Int       @map("user_id") // 店主ID
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId     Int?      @map("store_id")
+  store       Store?    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  imageId     Int?      @map("image_id")
+  image       Image?    @relation(fields: [imageId], references: [id])
+  categories  ProductCategory[]
 
   @@map("products")
+}
+
+model Category {
+  id       Int               @id @default(autoincrement())
+  name     String            @db.VarChar
+  parentId Int?              @map("parent_id")
+  parent   Category?         @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[]        @relation("CategoryParent")
+  products ProductCategory[]
+
+  @@map("categories")
+}
+
+model ProductCategory {
+  productId  Int      @map("product_id")
+  categoryId Int      @map("category_id")
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@map("product_categories")
 }
 
 model Image {
@@ -69,6 +94,7 @@ model Image {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   url         String    @db.VarChar
+  fileName    String?    @db.VarChar
   isPublic    Boolean   @default(false) @map("is_public")
   userId      Int       @map("user_id") // 上傳者ID
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)

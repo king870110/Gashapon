@@ -1,41 +1,70 @@
 import {
 	Controller,
-	Get,
 	Post,
+	Put,
 	Delete,
+	UseInterceptors,
+	UploadedFile,
 	Body,
+	Get,
 	Param,
 	ParseIntPipe,
-	UseGuards,
-	Request,
 } from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
 import { ImagesService } from "./images.service"
 import { CreateImageDto } from "./dto/create-image.dto"
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
-import { RolesGuard } from "../auth/guards/roles.guard"
-import { Roles } from "../auth/decorators/roles.decorator"
-import { Role } from "@prisma/client"
+import { Multer } from "multer"
+import { UpdateImageDto } from "./dto/update-image.dto"
 
 @Controller("images")
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class ImagesController {
 	constructor(private readonly imagesService: ImagesService) {}
 
-	@Post()
-	@Roles(Role.ADMIN, Role.MERCHANT)
-	create(@Request() req, @Body() createImageDto: CreateImageDto) {
-		return this.imagesService.create(createImageDto, req.user.id)
+	@Get()
+	findAllImages() {
+		return this.imagesService.findAll() // 移除 null 參數
 	}
 
-	@Get()
-	@Roles(Role.ADMIN, Role.MERCHANT)
-	findAll(@Request() req) {
-		return this.imagesService.findAll(req.user.id)
+	@Post("upload")
+	@UseInterceptors(FileInterceptor("file"))
+	async uploadFile(@UploadedFile() file: Multer.File) {
+		console.log({ file })
+		// 這裡假設你有一個上傳到雲存儲的邏輯
+		const url = `http://127.0.0.1:3000/public/uploads/images/${file.filename}`
+		return { url }
+	}
+
+	// @Post()
+	// async create(@Body() createImageDto: CreateImageDto) {
+	// 	return this.imagesService.create(createImageDto)
+	// }
+
+	@Post()
+	@UseInterceptors(FileInterceptor("file"))
+	async createImage(
+		@Body() createImageDto: CreateImageDto,
+		@UploadedFile() file: Multer.File
+	) {
+		// createImageDto.userId = Number(createImageDto.userId)
+		console.log("userId:", createImageDto.userId, typeof createImageDto.userId)
+		return this.imagesService.create(createImageDto, file)
+	}
+
+	@Put(":id")
+	update(
+		@Param("id", ParseIntPipe) id: number,
+		@Body() UpdateImageDto: UpdateImageDto,
+		@UploadedFile() file: Multer.File
+	) {
+		console.log({ id })
+		console.log({ UpdateImageDto })
+		console.log(UpdateImageDto.userId)
+		console.log({ file })
+		return this.imagesService.update(id, UpdateImageDto, file)
 	}
 
 	@Delete(":id")
-	@Roles(Role.ADMIN, Role.MERCHANT)
-	remove(@Request() req, @Param("id", ParseIntPipe) id: number) {
-		return this.imagesService.remove(id, req.user.id)
+	remove(@Param("id") id: string) {
+		return this.imagesService.remove(Number(id))
 	}
 }

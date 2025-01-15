@@ -7,7 +7,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 
 	// 全局管道
-	app.useGlobalPipes(new ValidationPipe())
+	app.useGlobalPipes(new ValidationPipe({ transform: true }))
 
 	// Swagger 配置
 	const config = new DocumentBuilder()

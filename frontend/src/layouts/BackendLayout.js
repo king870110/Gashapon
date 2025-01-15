@@ -1,13 +1,15 @@
 import React from "react"
-import Sidebar from "../components/Sidebar"
+import Sidebar from "../components/Header_backend"
+import Footer from "../components/Footer"
 
-const BackendLayout = ({ children }) => {
+const FrontendLayout = ({ children }) => {
 	return (
-		<div className="d-flex">
+		<>
 			<Sidebar />
-			<main className="flex-grow-1">{children}</main>
-		</div>
+			<main>{children}</main>
+			<Footer />
+		</>
 	)
 }
 
-export default BackendLayout
+export default FrontendLayout

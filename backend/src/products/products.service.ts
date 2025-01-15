@@ -8,10 +8,25 @@ export class ProductsService {
 	constructor(private prisma: PrismaService) {}
 
 	async create(data: CreateProductDto) {
+		const { name, price, userId, storeId, imageId, description } = data
+
 		return this.prisma.product.create({
-			data,
+			data: {
+				name,
+				price,
+				description,
+				user: {
+					connect: { id: userId }, // Relate to the User model
+				},
+				store: storeId ? { connect: { id: storeId } } : undefined, // Optional store relation
+				image: imageId ? { connect: { id: imageId } } : undefined, // Optional image relation
+			},
 			include: {
-				store: true, // 可以選擇是否要包括商店資料
+				image: {
+					select: {
+						url: true,
+					},
+				},
 			},
 		})
 	}
@@ -20,6 +35,11 @@ export class ProductsService {
 		return this.prisma.product.findMany({
 			include: {
 				store: true,
+				image: {
+					select: {
+						url: true,
+					},
+				},
 			},
 		})
 	}
@@ -29,14 +49,25 @@ export class ProductsService {
 			where: { id },
 			include: {
 				store: true,
+				image: true,
 			},
 		})
 	}
 
 	async update(id: number, data: UpdateProductDto) {
+		console.log({ data })
+		console.log({ id })
+		const { name, price, userId, imageId, ...restData } = data
 		return this.prisma.product.update({
 			where: { id },
-			data,
+			data: { name, price, userId, imageId },
+			include: {
+				image: {
+					select: {
+						url: true,
+					},
+				},
+			},
 		})
 	}
 
@@ -58,6 +89,12 @@ export class ProductsService {
 				store: true,
 				image: true,
 			},
+		})
+	}
+
+	async findByUserId(userId: number) {
+		return this.prisma.product.findMany({
+			where: { userId },
 		})
 	}
 }

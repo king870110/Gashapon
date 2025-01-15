@@ -9,6 +9,8 @@ import { FrontendModule } from "./frontend/frontend.module"
 // import { AdminModule } from "./admin/admin.module"
 import { PrismaModule } from "./prisma/prisma.module"
 import { RedisModule } from "./redis/redis.module"
+import { ServeStaticModule } from "@nestjs/serve-static"
+import { join } from "path"
 
 @Module({
 	imports: [
@@ -22,6 +24,10 @@ import { RedisModule } from "./redis/redis.module"
 		FrontendModule,
 		// AdminModule,
 		RedisModule,
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, "..", "uploads/images"),
+			serveRoot: "/uploads/images",
+		}),
 	],
 })
 export class AppModule {}

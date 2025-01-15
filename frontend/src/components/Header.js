@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from "react"
-import { Navbar, Nav, Container, Button } from "react-bootstrap"
+import React, { useContext } from "react"
+import { Navbar, Nav, Container, Button, Image } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
-import { isAuthenticated, removeToken } from "../utils/auth"
+import { AuthContext } from "../context/AuthContext"
 
 const Header = () => {
-	const [loggedIn, setLoggedIn] = useState(false)
+	const { loggedIn, role, logout } = useContext(AuthContext)
 	const navigate = useNavigate()
 
-	// 检查用户是否已经登录
-	useEffect(() => {
-		setLoggedIn(isAuthenticated())
-	}, [])
-
-	// 处理登出
 	const handleLogout = () => {
-		removeToken()
-		setLoggedIn(false)
+		logout()
 		navigate("/login")
 	}
 
 	return (
 		<Navbar bg="dark" variant="dark" expand="lg">
 			<Container>
+				<Image
+					src="/images/happycat.jpeg"
+					alt="logo"
+					style={{
+						width: "50px",
+						height: "auto",
+						padding: "0px 10px 0px 0px",
+						cursor: "pointer",
+					}}
+					onClick={() => (window.location.href = "/")}
+				/>
 				<Navbar.Brand as={Link} to="/">
 					Gashapon Map
 				</Navbar.Brand>
@@ -29,14 +33,19 @@ const Header = () => {
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="me-auto">
 						<Nav.Link as={Link} to="/shop">
-							商店
+							商店地圖
 						</Nav.Link>
 						<Nav.Link as={Link} to="/product">
-							商品
+							商品介紹
 						</Nav.Link>
 						<Nav.Link as={Link} to="/notices">
 							注意事項
 						</Nav.Link>
+						{(role === "ADMIN" || role === "MERCHANT") && (
+							<Nav.Link as={Link} to="/admin/store-management">
+								後台管理
+							</Nav.Link>
+						)}
 					</Nav>
 					<Nav>
 						{loggedIn ? (

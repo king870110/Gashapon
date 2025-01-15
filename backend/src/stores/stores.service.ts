@@ -8,14 +8,13 @@ export class StoresService {
 	constructor(private prisma: PrismaService) {}
 
 	async create(data: CreateStoreDto) {
+		console.log({ data })
 		return this.prisma.store.create({
 			data,
 			include: {
 				user: {
 					select: {
 						id: true,
-						name: true,
-						email: true,
 					},
 				},
 			},
@@ -82,9 +81,20 @@ export class StoresService {
 	}
 
 	async update(id: number, data: UpdateStoreDto) {
+		console.log({ data })
+		console.log({ id })
+		const {
+			name,
+			address,
+			latitude,
+			longitude,
+			description,
+			userId,
+			...restData
+		} = data
 		return this.prisma.store.update({
 			where: { id },
-			data,
+			data: { name, address, latitude, longitude, description, userId },
 		})
 	}
 
