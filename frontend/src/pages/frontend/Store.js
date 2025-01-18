@@ -63,7 +63,7 @@ const Store = () => {
 					></Filter>
 					<br></br>
 					{filteredStores.map((store) => (
-						<Col key={store.id} className="mb-3">
+						<Col key={store.id} className="mb-3 pointer" >
 							<StoreCard
 								store={store}
 								onClick={() => handleStoreClick(store)}

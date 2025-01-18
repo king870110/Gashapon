@@ -37,3 +37,6 @@ code {
 .vertical-center {
 	vertical-align: middle;
 }
+.pointer {
+	cursor: pointer;
+}
