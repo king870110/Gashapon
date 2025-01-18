@@ -45,20 +45,18 @@ export class ImagesController {
 		@Body() createImageDto: CreateImageDto,
 		@UploadedFile() file: Multer.File
 	) {
-		// createImageDto.userId = Number(createImageDto.userId)
-		console.log("userId:", createImageDto.userId, typeof createImageDto.userId)
 		return this.imagesService.create(createImageDto, file)
 	}
 
 	@Put(":id")
+	@UseInterceptors(FileInterceptor("file"))
 	update(
 		@Param("id", ParseIntPipe) id: number,
-		@Body() UpdateImageDto: UpdateImageDto,
+		@Body() UpdateImageDto: CreateImageDto,
 		@UploadedFile() file: Multer.File
 	) {
 		console.log({ id })
 		console.log({ UpdateImageDto })
-		console.log(UpdateImageDto.userId)
 		console.log({ file })
 		return this.imagesService.update(id, UpdateImageDto, file)
 	}

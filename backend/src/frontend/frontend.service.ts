@@ -7,17 +7,17 @@ import { FaqResponseDto } from "./dto/faq-response.dto"
 export class FrontendService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getHome(): Promise<HomeResponseDto> {
-		const [banners, products] = await Promise.all([
-			this.findAllBanners(),
-			this.findAllProducts(),
-		])
+	// async getHome(): Promise<HomeResponseDto> {
+	// 	const [banners, products] = await Promise.all([
+	// 		this.findAllBanners(),
+	// 		this.findAllProducts(),
+	// 	])
 
-		return {
-			banners,
-			products,
-		}
-	}
+	// 	return {
+	// 		banners,
+	// 		products,
+	// 	}
+	// }
 
 	async findAllBanners() {
 		const banners = await this.prisma.banner.findMany({
@@ -46,7 +46,7 @@ export class FrontendService {
 		const products = await this.prisma.product.findMany({
 			where: {},
 			include: {
-				store: true,
+				stores: true,
 				image: true,
 			},
 		})
@@ -57,8 +57,7 @@ export class FrontendService {
 			description: product.description || "",
 			price: product.price,
 			image_url: product.image.url,
-			store_id: product.storeId,
-			store_name: product.store.name,
+			stores:true,
 			created_at: product.createdAt,
 			updated_at: product.updatedAt,
 		}))

@@ -1,7 +1,8 @@
 import React from "react"
 import { Table, Button } from "react-bootstrap"
+import Switch from "../components/Switch"
 
-const ProductTable = ({ products, onEdit, onDelete, onClose }) => {
+const ProductTable = ({ products, onEdit, onDelete, onChangeStatus }) => {
 	return (
 		<div>
 			<Table striped bordered hover>
@@ -9,10 +10,11 @@ const ProductTable = ({ products, onEdit, onDelete, onClose }) => {
 					<tr>
 						<th style={{ width: "5%" }}>ID</th>
 						<th style={{ width: "15%" }}>名稱</th>
-						<th style={{ width: "25%" }}>簡圖</th>
+						<th style={{ width: "20%" }}>簡圖</th>
 						<th style={{ width: "20%" }}>類別</th>
 						<th style={{ width: "10%" }}>價格</th>
-						<th style={{ width: "15%" }}>操作</th>
+						<th style={{ width: "10%" }}>狀態</th>
+						<th style={{ width: "10%" }}>操作</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -31,6 +33,12 @@ const ProductTable = ({ products, onEdit, onDelete, onClose }) => {
 								{product.category?.name || "無"}
 							</td>
 							<td className="vertical-center">{product.price}</td>
+							<td className="vertical-center ">
+								<Switch
+									isChecked={product.isActive} // 直接使用 product.isActive
+									onChange={(checked) => onChangeStatus(product.id, checked)} // 傳遞 onChange
+								/>
+							</td>
 							<td className="vertical-center">
 								<Button
 									variant="warning"
@@ -47,13 +55,6 @@ const ProductTable = ({ products, onEdit, onDelete, onClose }) => {
 									onClick={() => onDelete(product.id)}
 								>
 									刪除
-								</Button>
-								<Button
-									variant="secondary"
-									size="sm"
-									onClick={() => onClose(product.id)}
-								>
-									關閉
 								</Button>
 							</td>
 						</tr>

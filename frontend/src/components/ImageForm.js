@@ -27,16 +27,30 @@ const ImageForm = ({
 			</Modal.Header>
 			<Modal.Body>
 				<Form>
-					<Form.Group controlId="formImageFile">
+					<Form.Group controlId="formProductPrice">
+						<Form.Label>檔案名稱</Form.Label>
+						<Form.Control
+							type="text"
+							placeholder="輸入價格"
+							name="fileName"
+							value={image?.fileName || ""}
+							onChange={handleInputChange}
+						/>
+					</Form.Group>
+					<Form.Group controlId="formImageFile" className="mt-3">
 						<Form.Label>上傳圖片</Form.Label>
 						<Form.Control type="file" name="file" onChange={handleFileChange} />
 					</Form.Group>
 					{previewUrl && (
-						<div className="mt-3">
+						<div className="mt-2" style={{ margin: "0 0 0 45px" }}>
 							<img
-								src={previewUrl}
+								src={
+									previewUrl.indexOf("blob") === 0
+										? previewUrl
+										: "http://127.0.0.1:3000" + previewUrl
+								}
 								alt="Preview"
-								style={{ width: "100%", height: "60vh" }}
+								style={{ width: "80%" }}
 							/>
 						</div>
 					)}

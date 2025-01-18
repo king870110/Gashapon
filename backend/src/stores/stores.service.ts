@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
 import { CreateStoreDto } from "./dto/create-store.dto"
 import { UpdateStoreDto } from "./dto/update-store.dto"
+import { UpdateStoreStoreDto } from "./dto/update-store-product.dto"
 
 @Injectable()
 export class StoresService {
@@ -90,11 +91,37 @@ export class StoresService {
 			longitude,
 			description,
 			userId,
+			isActive,
 			...restData
 		} = data
 		return this.prisma.store.update({
 			where: { id },
-			data: { name, address, latitude, longitude, description, userId },
+			data: {
+				name,
+				address,
+				latitude,
+				longitude,
+				description,
+				userId,
+				isActive,
+			},
+		})
+	}
+
+	async updateStoreStore(id: number, data: UpdateStoreStoreDto) {
+		console.log({ data })
+		console.log({ id })
+		const { products, ...restData } = data
+		return this.prisma.store.update({
+			where: { id },
+			data: {
+				products: {
+					set: products.map((productId) => ({ id: Number(productId) })), // 更新商品關聯
+				},
+			},
+			include: {
+				products: true, // 返回關聯的商品數據
+			},
 		})
 	}
 

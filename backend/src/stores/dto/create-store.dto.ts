@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from "class-validator"
+import { IsString, IsNumber, IsOptional, IsBoolean } from "class-validator"
 import { ApiProperty } from "@nestjs/swagger"
 
 export class CreateStoreDto {
@@ -24,4 +24,8 @@ export class CreateStoreDto {
 
 	@IsNumber()
 	userId: number
+
+	@IsBoolean()
+	@IsOptional()
+	isActive?: boolean
 }

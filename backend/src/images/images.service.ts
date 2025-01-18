@@ -21,9 +21,9 @@ export class ImagesService {
 	async findAll() {
 		try {
 			const images = await this.prisma.image.findMany({
-				include: {
-					user: true,
-				},
+				// include: {
+				// 	user: true,
+				// },
 				// 可選：添加分頁
 				// take: 10,
 				// skip: 0,
@@ -62,14 +62,6 @@ export class ImagesService {
 			// 保存文件
 			fs.writeFileSync(filePath, file.buffer)
 
-			// console.log(typeof data.isPublic)
-			// if (typeof data.isPublic === "string" && data.isPublic === "true") {
-			// 	data.isPublic = true
-			// } else {
-			// 	data.isPublic = false
-			// }
-			// data.userId = Number(data.userId)
-
 			// 保存到數據庫
 			return this.prisma.image.create({
 				data: {
@@ -83,26 +75,34 @@ export class ImagesService {
 		}
 	}
 
-	async update(id: number, data: UpdateImageDto, file: Multer.File) {
+	async update(id: number, data: CreateImageDto, file: Multer.File) {
 		try {
 			console.log({ id })
 			console.log({ data })
 			console.log({ file })
-			// 生成唯一的文件名
-			const fileName = `${Date.now()}-${file.originalname}`
-			const filePath = path.join(this.uploadPath, fileName)
 
-			// 保存文件
-			fs.writeFileSync(filePath, file.buffer)
+			let fileName = ``
+			let url = ``
+			if (file && file.originalname) {
+				// 生成唯一的文件名
+				fileName = `${Date.now()}-${file.originalname}`
+				url = `/uploads/images/${fileName}`
+				data.url = url
+				const filePath = path.join(this.uploadPath, fileName)
 
-			data.userId = Number(data.userId)
+				// 保存文件
+				fs.writeFileSync(filePath, file.buffer)
+			}
+
+			if (data.id) {
+				delete data.id
+			}
 
 			// 保存到數據庫
 			return this.prisma.image.update({
 				where: { id },
 				data: {
 					...data,
-					url: `/uploads/images/${fileName}`, // 保存相對路徑
 				},
 			})
 		} catch (error) {

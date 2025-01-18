@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react"
 import axios from "axios"
-import { Container, Row, Col, Form, Button } from "react-bootstrap"
+import { Container, Row, Col } from "react-bootstrap"
 import ProductCard from "../../components/ProductCard" // 假設有一個 ProductCard 組件
+import Filter from "../../components/Filter"
 
 const ProductList = () => {
 	const [products, setProducts] = useState([]) // 初始化為空陣列
@@ -13,7 +14,7 @@ const ProductList = () => {
 		const fetchProducts = async () => {
 			try {
 				const response = await axios.get("http://localhost:3000/products")
-				setProducts(response.data) // 確保提取 data 屬性
+				setProducts(response.data.filter((ele) => ele.isActive === true)) // 確保提取 data 屬性
 			} catch (err) {
 				setError(err.message || "無法加載數據")
 				setProducts([]) // 確保錯誤時 products 是空陣列
@@ -49,32 +50,11 @@ const ProductList = () => {
 	return (
 		<Container>
 			<h1 className="my-4">商品列表</h1>
-			<Form onSubmit={handleSubmit}>
-				<Form.Group controlId="formSearch" as={Row}>
-					<Form.Label>搜尋商品</Form.Label>
-					<Col xs={9}>
-						<Form.Control
-							type="text"
-							placeholder="輸入商品名稱"
-							ref={inputRef}
-						/>
-					</Col>
-					<Col xs={1}>
-						<Button type="submit" style={{ width: "100%" }}>
-							搜尋
-						</Button>
-					</Col>
-					<Col xs={1}>
-						<Button
-							variant="secondary"
-							onClick={handleClear}
-							style={{ width: "100%" }}
-						>
-							清除
-						</Button>
-					</Col>
-				</Form.Group>
-			</Form>
+			<Filter
+				inputRef={inputRef}
+				handleSubmit={handleSubmit}
+				handleClear={handleClear}
+			></Filter>
 			<Row>
 				<br></br>
 			</Row>

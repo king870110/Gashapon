@@ -7,10 +7,10 @@ import { FaqResponseDto } from "./dto/faq-response.dto"
 export class FrontendController {
 	constructor(private readonly frontendService: FrontendService) {}
 
-	@Get()
-	async getHome(): Promise<HomeResponseDto> {
-		return this.frontendService.getHome()
-	}
+	// @Get()
+	// async getHome(): Promise<HomeResponseDto> {
+	// 	return this.frontendService.getHome()
+	// }
 
 	@Get("faqs")
 	async getFaqs(): Promise<FaqResponseDto> {

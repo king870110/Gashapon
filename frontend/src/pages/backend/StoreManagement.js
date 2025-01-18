@@ -4,11 +4,13 @@ import StoreTable from "../../components/StoreTable"
 import api from "../../utils/api"
 import StoreForm from "../../components/StoreForm"
 import { AuthContext } from "../../context/AuthContext"
+import StoreProduct from "../../components/StoreProduct"
 
 const StoreManagement = () => {
 	const [stores, setStores] = useState([])
 	const [showModal, setShowModal] = useState(false)
 	const [currentStore, setCurrentStore] = useState(null)
+	const [showStoreProductModal, setShowStoreProductModal] = useState(false)
 	const { userId } = useContext(AuthContext)
 
 	useEffect(() => {
@@ -29,7 +31,11 @@ const StoreManagement = () => {
 		setCurrentStore(storeToEdit)
 		setShowModal(true)
 	}
-
+	const onShowStoreProductModal = (id) => {
+		const storeProduct = stores.find((store) => store.id === id)
+		setCurrentStore(storeProduct)
+		setShowStoreProductModal(true)
+	}
 	const handleDelete = async (id) => {
 		try {
 			await api.delete(`/stores/${id}`)
@@ -44,12 +50,36 @@ const StoreManagement = () => {
 		console.log("Close store with ID:", id)
 	}
 
+	const updateStore = (updateStore) => {
+		console.log({ updateStore })
+		currentStore.products = updateStore.products
+		// let storeProduct = stores.find((store) => store.id === updateStore.id)
+		// storeProduct = updateStore
+		setCurrentStore(updateStore)
+		console.log({ currentStore })
+	}
+
 	const handleShowModal = () => {
 		setCurrentStore(null)
 		setShowModal(true)
 	}
+	const onChangeStatus = async (id, isActive) => {
+		try {
+			const response = await api.put(`/stores/${id}`, { isActive })
+			console.log({ response })
+			// 在這裡執行其他邏輯，例如 API 請求來更新狀態
+			setStores((prevStores) =>
+				prevStores.map((store) =>
+					store.id === id ? { ...store, isActive } : store
+				)
+			)
+		} catch (error) {
+			console.error(error)
+		}
+	}
 
 	const handleCloseModal = () => setShowModal(false)
+	const closeStoreProductModal = () => setShowStoreProductModal(false)
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target
@@ -90,6 +120,8 @@ const StoreManagement = () => {
 				onEdit={handleEdit}
 				onDelete={handleDelete}
 				onClose={handleClose}
+				onChangeStatus={onChangeStatus}
+				onShowStoreProductModal={onShowStoreProductModal}
 			/>
 
 			<StoreForm
@@ -99,6 +131,13 @@ const StoreManagement = () => {
 				handleInputChange={handleInputChange}
 				handleAddOrUpdateStore={handleAddOrUpdateStore}
 			/>
+			<StoreProduct
+				store={currentStore}
+				showStoreProductModal={showStoreProductModal}
+				handleCloseModal={closeStoreProductModal}
+				updateStore={updateStore}
+				// handleAddOrUpdateStoreProduct={handleAddOrUpdateStoreProduct}
+			></StoreProduct>
 		</Container>
 	)
 }

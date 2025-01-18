@@ -20,17 +20,19 @@ const ImageManagement = () => {
 	const fetchImages = async () => {
 		try {
 			const response = await api.get("/images")
+			// console.log({ response })
 			setImages(response.data)
 		} catch (error) {
 			console.error("Failed to fetch images:", error)
 		}
 	}
 
-	const handleEdit = (id) => {
+	const handleEdit = (id, url) => {
 		const imageToEdit = images.find((image) => image.id === id)
 		console.log({ imageToEdit })
 		setCurrentImage(imageToEdit)
 		setShowModal(true)
+		setPreviewUrl(url)
 	}
 
 	const handleDelete = async (id) => {
@@ -74,10 +76,11 @@ const ImageManagement = () => {
 			setSelectedFile(file)
 			// 創建預覽URL
 			const previewUrl = URL.createObjectURL(file)
+			console.log({ currentImage })
 			setCurrentImage((prev) => ({
 				...prev,
 				url: previewUrl,
-				fileName: file.name,
+				fileName: !prev?.fileName ? file.name : prev.fileName,
 			}))
 		}
 	}
@@ -155,7 +158,7 @@ const ImageManagement = () => {
 									<Button
 										variant="outline-primary"
 										size="sm"
-										onClick={() => handleEdit(image.id)}
+										onClick={() => handleEdit(image.id, image.url)}
 									>
 										編輯
 									</Button>

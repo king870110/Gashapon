@@ -18,6 +18,7 @@ import { StoresService } from "./stores.service"
 
 import { CreateStoreDto } from "./dto/create-store.dto"
 import { UpdateStoreDto } from "./dto/update-store.dto"
+import { UpdateStoreStoreDto } from "./dto/update-store-product.dto"
 
 @ApiTags("stores")
 @ApiBearerAuth()
@@ -60,6 +61,19 @@ export class StoresController {
 		@Body() updateStoreDto: UpdateStoreDto
 	) {
 		return this.storesService.update(id, updateStoreDto)
+	}
+
+	@Put(":id/products")
+	@ApiOperation({ summary: "Update a store" })
+	@ApiResponse({
+		status: 200,
+		description: "The store has been successfully updated.",
+	})
+	updateStoreStore(
+		@Param("id", ParseIntPipe) id: number,
+		@Body() UpdateStoreStoreDto: UpdateStoreStoreDto
+	) {
+		return this.storesService.updateStoreStore(id, UpdateStoreStoreDto)
 	}
 
 	@Delete(":id")

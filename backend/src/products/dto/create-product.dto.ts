@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from "class-validator"
+import { IsString, IsNumber, IsOptional, IsBoolean } from "class-validator"
 import { ApiProperty } from "@nestjs/swagger"
 import { Transform } from "class-transformer"
 
@@ -31,4 +31,8 @@ export class CreateProductDto {
 	// @IsNumber()
 	@Transform(({ value }) => parseInt(value, 10)) // 將字串轉換為整數
 	userId: number
+
+	@IsBoolean()
+	@IsOptional()
+	isActive?: boolean
 }

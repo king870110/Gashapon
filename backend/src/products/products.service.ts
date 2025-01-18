@@ -18,7 +18,7 @@ export class ProductsService {
 				user: {
 					connect: { id: userId }, // Relate to the User model
 				},
-				store: storeId ? { connect: { id: storeId } } : undefined, // Optional store relation
+				stores: storeId ? { connect: { id: storeId } } : undefined, // Optional store relation
 				image: imageId ? { connect: { id: imageId } } : undefined, // Optional image relation
 			},
 			include: {
@@ -34,7 +34,7 @@ export class ProductsService {
 	async findAll() {
 		return this.prisma.product.findMany({
 			include: {
-				store: true,
+				stores: true, // 多對多關係，stores 是一個數組
 				image: {
 					select: {
 						url: true,
@@ -48,7 +48,7 @@ export class ProductsService {
 		return this.prisma.product.findUnique({
 			where: { id },
 			include: {
-				store: true,
+				stores: true,
 				image: true,
 			},
 		})
@@ -57,10 +57,10 @@ export class ProductsService {
 	async update(id: number, data: UpdateProductDto) {
 		console.log({ data })
 		console.log({ id })
-		const { name, price, userId, imageId, ...restData } = data
+		const { name, price, userId, imageId, isActive, ...restData } = data
 		return this.prisma.product.update({
 			where: { id },
-			data: { name, price, userId, imageId },
+			data: { name, price, userId, imageId, isActive },
 			include: {
 				image: {
 					select: {
@@ -86,7 +86,7 @@ export class ProductsService {
 				],
 			},
 			include: {
-				store: true,
+				stores: true,
 				image: true,
 			},
 		})

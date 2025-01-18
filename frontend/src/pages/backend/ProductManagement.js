@@ -40,8 +40,21 @@ const ProductManagement = () => {
 		}
 	}
 
-	const handleClose = (id) => {
-		console.log("Close store with ID:", id)
+	const onChangeStatus = async (id, isActive) => {
+		try {
+			console.log({ isActive })
+			// console.log(`Product ID: ${id}, New Status: ${isActive}`)
+			const response = await api.put(`/products/${id}`, { isActive })
+			console.log({ response })
+			// 在這裡執行其他邏輯，例如 API 請求來更新狀態
+			setProducts((prevProducts) =>
+				prevProducts.map((product) =>
+					product.id === id ? { ...product, isActive } : product
+				)
+			)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	const handleShowModal = () => {
@@ -97,7 +110,7 @@ const ProductManagement = () => {
 				products={products}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				onClose={handleClose}
+				onChangeStatus={onChangeStatus}
 			/>
 
 			<ProductForm

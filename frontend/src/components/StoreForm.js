@@ -134,7 +134,11 @@ const StoreForm = ({
 							readOnly
 						/>
 					</Form.Group>
-					<div id="map" style={{ height: "300px" }}></div>
+					<br></br>
+					<div
+						id="map"
+						style={{ height: "300px", border: "solid 1px #dee2e6" }}
+					></div>
 				</Form>
 			</Modal.Body>
 			<Modal.Footer>

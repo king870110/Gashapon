@@ -4,14 +4,19 @@ import {
 	IsOptional,
 	IsNumber,
 	IsNotEmpty,
-	IsBooleanString,
 } from "class-validator"
 import { Transform } from "class-transformer"
 
 export class CreateImageDto {
-	// @IsString()
-	// @IsNotEmpty()
-	// url: string
+	@IsNumber()
+	@IsOptional()
+	@Transform(({ value }) => parseInt(value, 10))
+	id?: number
+
+	@IsString()
+	@IsOptional()
+	// @Transform(({ value }) => toString(value))
+	url?: string
 
 	@IsBoolean()
 	@IsOptional()

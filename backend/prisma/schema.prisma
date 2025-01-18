@@ -46,6 +46,7 @@ model Store {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments    Comment[]
   products    Product[]
+  isActive   Boolean   @default(true) @map("is_active")
 
   @@map("stores")
 }
@@ -59,11 +60,11 @@ model Product {
   description String?
   userId      Int       @map("user_id") // 店主ID
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  storeId     Int?      @map("store_id")
-  store       Store?    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  stores      Store[]   // 多對多關係
   imageId     Int?      @map("image_id")
   image       Image?    @relation(fields: [imageId], references: [id])
   categories  ProductCategory[]
+  isActive   Boolean   @default(true) @map("is_active")
 
   @@map("products")
 }
